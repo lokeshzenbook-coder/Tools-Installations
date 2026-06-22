@@ -1,0 +1,8 @@
+## identity provider to AWS ##
+
+#For the provider URL# 
+https://token.actions.githubusercontent.com
+
+#For the Audience#
+sts.amazonaws.com
+
