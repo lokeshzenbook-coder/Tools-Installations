@@ -50,3 +50,13 @@ docker --version > /var/log/docker-version.log
 docker compose version >> /var/log/docker-version.log
 
 echo "Docker and SonarQube installation completed" > /var/log/user-data-success.log
+
+## One-Liner Cleanup ##
+
+docker stop sonarqube-custom 2>/dev/null || true
+docker rm sonarqube-custom 2>/dev/null || true
+sudo systemctl stop docker
+sudo apt remove -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt autoremove -y
+sudo rm -rf /var/lib/docker /var/lib/containerd
+sudo rm -f /etc/apt/sources.list.d/docker.sources /etc/apt/keyrings/docker.asc
