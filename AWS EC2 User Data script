@@ -37,13 +37,13 @@ systemctl start docker
 usermod -aG docker ubuntu
 
 # Pull and run SonarQube
-docker pull sonarqube:10.6-community
+docker pull sonarqube:9.9-community
 
 docker run -d \
   --name sonarqube-custom \
   --restart unless-stopped \
   -p 9000:9000 \
-  sonarqube:10.6-community
+  sonarqube:9.9-community
 
 # Log versions
 docker --version > /var/log/docker-version.log
