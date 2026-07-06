@@ -1,0 +1,50 @@
+#!/bin/bash
+set -eux
+
+# Update Ubuntu
+apt-get update -y
+apt-get upgrade -y
+
+# Install dependencies
+apt-get install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+# Install Docker
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) stable" | \
+tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+apt-get update -y
+
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Enable Docker
+systemctl enable docker
+systemctl start docker
+
+# Add ubuntu user to docker group
+usermod -aG docker ubuntu
+
+# Pull Vault image
+docker pull hashicorp/vault:latest
+
+# Run Vault in Dev Mode
+docker run -d \
+  --name vault \
+  --restart unless-stopped \
+  -p 8200:8200 \
+  -e VAULT_DEV_ROOT_TOKEN_ID=root \
+  -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 \
+  --cap-add=IPC_LOCK \
+  hashicorp/vault:latest server -dev
